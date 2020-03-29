@@ -178,6 +178,23 @@ module processor(halt, reset, clk);
 	setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz));
 	endfunction
 	
+	//check if rd is used
+	function usesrd;
+	input `WORD inst;	
+	usesrd = (inst `OP != `OPld) && (inst `OP != `OPtrap) && (inst `OP != `OPci8) && (inst `OP != `OPcii) && (inst `OP != `OPcup);
+	endfunction
+	
+	//check if rd is used
+	function usesrs;
+	input `WORD inst;
+	usesrs = !((inst `OP != `OPaddi) && (inst `OP != `OPaddii) && (inst `OP != `OPaddp) && (inst `OP != `OPaddpp) && 
+		(inst `OP != `OPld) && (inst `OP != `OPmuli) && (inst `OP != `OPmulii) && (inst `OP != `OPmulp) && (inst `OP != `OPmulpp)
+		&& (inst `OP != `OPshi) && (inst `OP != `OPshii) && (inst `OP != `OPslti) && (inst `OP != `OPst) && (inst `OP != `OPxor));
+	endfunction
+	
+	//is pc changing
+	assign pendpc = (setspc(ir0) || setspc(ir1));
+	
 	always @(posedge clk) begin
 		//State machine case
 		case (s)
