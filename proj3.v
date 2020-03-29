@@ -8,6 +8,7 @@
 `define WORD		[15:0]
 `define MEMSIZE 	[65535:0]	// Total amount of instructions in memory
 `define REGSIZE 	[15:0]		// Number of Registers
+`define DEST		[15:0]
 
 //Instruction Field Placements
 //NOTE: I could be wrong about these, I generated them from Dr. Deitz's assembler implementation
@@ -60,7 +61,7 @@
 `define OPshii		8'b01110101
 `define OPslti		8'b01110110
 `define OPsltii		8'b01110111
-
+`define NOP		16'b0101000000000000
 // TODO: complete ALU
 module alu(rd, rs, op, aluOut);
 	input `WORD rd;
@@ -145,10 +146,12 @@ module processor(halt, reset, clk);
 	reg `WORD regfile `REGSIZE;		// Register File Size
 	reg `WORD rd, rs;
 	wire `WORD aluOut;
+	reg `DEST target;	// jump target
 	//new variables
 	reg jump;
 	reg `WORD ir0, ir1;
-	reg `WORD im0, rd1, rn1, res;
+	reg `WORD rd1, rs1, res;
+	reg `WORD pc0, pc1, tpc;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 	
@@ -188,12 +191,49 @@ module processor(halt, reset, clk);
 	function usesrs;
 	input `WORD inst;
 	usesrs = !((inst `OP != `OPaddi) && (inst `OP != `OPaddii) && (inst `OP != `OPaddp) && (inst `OP != `OPaddpp) && 
-		(inst `OP != `OPld) && (inst `OP != `OPmuli) && (inst `OP != `OPmulii) && (inst `OP != `OPmulp) && (inst `OP != `OPmulpp)
-		&& (inst `OP != `OPshi) && (inst `OP != `OPshii) && (inst `OP != `OPslti) && (inst `OP != `OPst) && (inst `OP != `OPxor));
+		   (inst `OP != `OPld) && (inst `OP != `OPand) && (inst `OP != `OPmuli) && (inst `OP != `OPmulii) && 
+		   (inst `OP != `OPmulp) && (inst `OP != `OPmulpp) && (inst `OP != `OPshi) && (inst `OP != `OPshii) && 
+		   (inst `OP != `OPslti) && (inst `OP != `OPst) && (inst `OP != `OPxor));
 	endfunction
 	
 	//is pc changing
 	assign pendpc = (setspc(ir0) || setspc(ir1));
+	
+	//start of state 0
+	always @(posedge clk) begin
+		tpc = (jump ? target : pc);
+		if (wait1) begin
+    			// blocked by stage 1, so should not jump
+   			pc <= tpc;
+  		end else begin
+   			// not blocked by stage 1
+  			ir = text[tpc];
+			if(pendpc) begin
+				ir0 <= `NOP;
+     				pc <= tpc;
+			end else begin
+				ir0 <= ir;
+				pc <= tpc + 1;
+			end
+			pc0 <= tpc;
+		end
+	end
+	
+	//start of stage 1
+	always @(posedge clk) begin
+		//check for conflict
+		if((ir0 != `NOP) && setsrd(ir1) && ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) 
+			&& (ir0 `Reg1 == ir1 `Reg0)))) begin
+			wait1 = 1;
+			ir1 <= `NOP;
+		//no conflict
+		end else begin
+			wait1 = 0;
+			rd1 <= regfile[ir0 `Reg0];
+			rs1 <= regfile[ir0 `Reg1];
+			ir1 <= ir0;
+		end
+	end
 	
 	always @(posedge clk) begin
 		//State machine case
