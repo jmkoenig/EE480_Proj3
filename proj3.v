@@ -11,6 +11,7 @@
 
 //Instruction Field Placements
 //NOTE: I could be wrong about these, I generated them from Dr. Deitz's assembler implementation
+`define OP		[15:8]
 `define Op0		[15:12]
 `define Op1		[11:8]
 `define Reg0		[3:0]
@@ -144,19 +145,39 @@ module processor(halt, reset, clk);
 	reg `WORD regfile `REGSIZE;		// Register File Size
 	reg `WORD rd, rs;
 	wire `WORD aluOut;
+	//new variables
+	reg jump;
+	reg `WORD ir0, ir1;
+	reg `WORD im0, rd1, rn1, res;
+	wire pendpc;		// is there a pc update
+	reg wait1;		// is a stall needed in stage 1
+	
 	alu myalu(regfile [ir `Reg0], regfile [ir `Reg1], op, aluOut);
 
 	//processor initialization
 	always @(posedge reset) begin
-		halt <= 0;
-		pc <= 0;
-		s <= `Start;
-
+		halt = 0;
+		pc = 0;
+		s = `Start;
+		jump = 0;
+		
 		//The following functions read from VMEM?
 		$readmemh0(text);
 		$readmemh1(data);
 	end
 
+	//checks if the destination register is set
+	function setsrd;
+	input `WORD inst;
+	setsrd = (inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz) && (inst `OP != `OPst) && (inst `OP != `OPtrap);
+	endfunction
+	
+	//checks if pc is set
+	function setspc;
+	input `WORD inst;
+	setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz));
+	endfunction
+	
 	always @(posedge clk) begin
 		//State machine case
 		case (s)
