@@ -309,6 +309,7 @@ module processor(halt, reset, clk);
 			endcase	
 		end
 	end
+endmodule 
 
 module testbench;
 reg reset = 0;
