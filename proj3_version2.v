@@ -151,7 +151,7 @@ module processor(halt, reset, clk);
 	reg jump;
 	reg `WORD ir0, ir1;
 	reg `WORD rd1, rs1, imm, res;
-	reg `WORD pc0, pc1, tpc;
+	reg `WORD tpc;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 	
@@ -215,7 +215,6 @@ module processor(halt, reset, clk);
 				ir0 <= ir;
 				pc <= tpc + 1;
 			end
-			pc0 <= tpc;
 		end
 	end
 	
