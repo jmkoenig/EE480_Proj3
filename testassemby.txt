@@ -1,0 +1,82 @@
+	.text
+start:
+	cii $r1, 0x00
+        cii $r2, 0x00
+        cii $r3, 0xff
+	st $r1, $r2
+        ld $r3, $r1
+        bz $r3, lab1
+        trap
+lab1:
+        ci8 $r1, 0xff
+        ci8 $r2, 0xff
+        negi $r1
+        addi $r1, $r2
+        jz $r1, lab2
+        trap
+lab2:
+        cii $r3, 0xff
+        cii $r4, 0x00
+        muli $r3, $r4
+        bz $r3, lab3
+        trap
+lab3:
+        ci8 $r6, 0x00
+        bnz $r6, fail
+        ci8 $r3, 0xff
+        ci8 $r4, 0xff
+        mulii $r3, $r4
+        bnz $r3, lab4
+        trap
+lab4:
+        jmp lab5
+        trap
+lab5:
+        ci8 $r5, 0x00
+        not $r5
+        jnz $r5, lab6
+        trap
+lab6:
+        ci8 $r6, 0xff
+        ci8 $r7, 0x00
+        or $r7, $r6
+        bz $r7, fail
+        ci8 $r7, 0x00
+        and $r7, $r6
+        bnz $r7, fail
+        ci $r8, 0x0010
+        shi $r6, $r8
+        bnz $r6, fail
+        cii $r2, 0xff
+        ci8 $r1, 0x01
+        shii $r1, $r2
+        bnz $r1, fail
+        xor $r1, $r2
+        bz $r1, fail
+        ci $r1, 0x010f
+        ci $r2, 0x010f
+        negii $r2
+        addii $r1, $r2
+        bnz $r1, fail
+        cii $r1, 0x01
+        anyi $r1
+        bz $r1, fail
+        cii $r1, 0x00
+        anyii $r1
+        bnz $r1, fail
+        cii $r2, 0x01
+        slti $r1, $r2
+        bz $r1, fail
+        cii $r1, 0x00
+        sltii $r1, $r2
+        bz $r1, fail
+        ci $r10, 0x0000
+        bz $r10, success
+fail:
+        trap
+        trap
+        trap
+        trap
+        trap
+success:
+        cii $r1, 0xff
