@@ -150,7 +150,7 @@ module processor(halt, reset, clk);
 	//new variables
 	reg jump;
 	reg `WORD ir0, ir1;
-	reg `WORD rd1, rs1, res;
+	reg `WORD rd1, rs1, imm, res;
 	reg `WORD pc0, pc1, tpc;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
@@ -240,7 +240,7 @@ module processor(halt, reset, clk);
 	//stage 2 starts here
 	always @(posedge clk) begin
 		if(ir1==`NOP)
-			jump<=0;
+			jump <= 0;
 		else begin
 			//State machine case
 			case (s)
@@ -248,11 +248,12 @@ module processor(halt, reset, clk);
 					case (op)
 						`OPtrap: 
 							begin
-								halt <= 1; 
+								halt <= 1;
 							end
 						`OPjr:
 							begin
-								pc <= regfile[ ir `Reg0 ];
+								target <= regfile[ ir `Reg0 ];
+								jump <= 1;
 							end
 					endcase
 				 end // halts the program and saves the current instruction
@@ -262,39 +263,49 @@ module processor(halt, reset, clk);
 							`OPld:
 								begin
 									regfile [ir `Reg0] <= data[regfile [ir `Reg1]];
+									jump <= 0;
 								end
 							`OPst:
 								begin
 									data[regfile [ir `Reg1]] = regfile [ir `Reg0];
+									jump <= 0;
 								end
 						endcase
 					end
 				`OPci8:
 					begin
 						regfile [ir `Reg0] <= ((ir `Imm8 & 8'h80) ? 16'hff00 : 0) | (ir `Imm8 & 8'hff);
+						jump <= 0;
 					end
 				`OPcii:
 					begin
 						regfile [ir `Reg0] `HighBits <= ir `Imm8;
 						regfile [ir `Reg0] `LowBits <= ir `Imm8;
+						jump <= 0;
 					end
 				`OPcup:
 					begin
 						regfile [ir `Reg0] `HighBits <= ir `Imm8;
+						jump <= 0;
 					end
 				`OPbz:
 					begin
-						if (regfile [ir `Reg0] == 0)
-							pc <= pc + ir `Imm8;
+						if (regfile [ir `Reg0] == 0) begin
+							target <= pc + ir `Imm8;
+							jump <= 1;
+						end
 					end
 				`OPbnz:
 					begin
-						if (regfile [ir `Reg0] != 0)
-							pc <= pc + ir `Imm8;
+						if (regfile [ir `Reg0] != 0) begin
+							target <= pc + ir `Imm8;
+							jump <= 1;
+						end
 					end
 				default: //default cases are handled by ALU
 					begin
 						regfile [ir `Reg0] <= aluOut;
+						jump <= 0;
 					end
 			endcase	
 		end
