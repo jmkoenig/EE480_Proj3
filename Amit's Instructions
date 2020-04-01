@@ -1,0 +1,9 @@
+would first start with writing the function and just putting the wire, where it can affect
+Red boxes are Mux, I would try to solve the disputes, who owns which mux and under which stage it falls through?
+is there any instruction which stores/load the content from register to memory?
+• What will be different in testing of assembly language program from previous assignment? (Basically, you need to make sure that your pipeline processor is able to handle Interlocks - Control hazard (Jumps?) and Data hazard (The result of instruction 1 is used in instruction 2, however it will not be available to instruction 1 get finished its execution)
+o How it can be resolved? Ans: Dr. Dietz asked to feed NOP if any of above condition is occurring. So, how can you detect this in your Verilog code?
+
+• Does your assembly language code works for interlocks? (you may use specific program instruction sequence to check it)
+What happens during NOP?
+o Think in terms of control signals of MUX and BUFF, Instruction register (ir) content
