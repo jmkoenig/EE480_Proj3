@@ -232,6 +232,8 @@ module processor(halt, reset, clk);
 			rd1 <= regfile[ir0 `Reg0];
 			rs1 <= regfile[ir0 `Reg1];
 			ir1 <= ir0;
+			op <= {ir `Op0, ir `Op1};
+			s  <= ir `Op0;
 		end
 	end
 	
@@ -251,12 +253,6 @@ module processor(halt, reset, clk);
 						end
 				endcase
 			 end // halts the program and saves the current instruction
-			`Start: begin ir <= text[pc];  s <= `Decode; end // Fetches first instruction and moves the state to decode
-			`Decode: 
-				begin // TODO: Figure out how to assign state s to procede with next step.
-					op <= {ir `Op0, ir `Op1};
-					s  <= ir `Op0;
-				end
 			`LdOrSt:
 				begin
 					case (op)
