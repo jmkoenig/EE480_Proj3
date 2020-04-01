@@ -273,7 +273,7 @@ module processor(halt, reset, clk);
 					end
 				`OPci8:
 					begin
-						regfile [ir1 `Reg0] <= ((ir1 `Imm8 & 8'h80) ? 16'hff00 : 0) | (ir1 `Imm8 & 8'hff);
+						regfile [ir1 `Reg0] <= {{8{ir1[7]}} ,ir1 `Imm8};
 						jump <= 0;
 					end
 				`OPcii:
