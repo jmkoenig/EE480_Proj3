@@ -232,11 +232,12 @@ module processor(halt, reset, clk);
 			rd1 <= regfile[ir0 `Reg0];
 			rs1 <= regfile[ir0 `Reg1];
 			ir1 <= ir0;
-			op <= {ir `Op0, ir `Op1};
-			s  <= ir `Op0;
+			op <= {ir0 `Op0, ir0 `Op1};
+			s  <= ir0 `Op0;
 		end
 	end
 	
+	//stage 2 starts here
 	always @(posedge clk) begin
 		//State machine case
 		case (s)
