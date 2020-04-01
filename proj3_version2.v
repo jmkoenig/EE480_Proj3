@@ -155,13 +155,13 @@ module processor(halt, reset, clk);
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 	
-	alu myalu(regfile [ir `Reg0], regfile [ir `Reg1], op, aluOut);
+	alu myalu(rd1, rs1, op, aluOut);
 
 	//processor initialization
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
-		s = `Start;
+		s = `NOP
 		jump = 0;
 		
 		//The following functions read from VMEM?
@@ -252,7 +252,7 @@ module processor(halt, reset, clk);
 							end
 						`OPjr:
 							begin
-								target <= regfile[ ir `Reg0 ];
+								target <= regfile[ir1 `Reg0 ];
 								jump <= 1;
 							end
 					endcase
@@ -262,55 +262,54 @@ module processor(halt, reset, clk);
 						case (op)
 							`OPld:
 								begin
-									regfile [ir `Reg0] <= data[regfile [ir `Reg1]];
+									regfile [ir1 `Reg0] <= data[regfile [ir1 `Reg1]];
 									jump <= 0;
 								end
 							`OPst:
 								begin
-									data[regfile [ir `Reg1]] = regfile [ir `Reg0];
+									data[regfile [ir1 `Reg1]] = regfile [ir1 `Reg0];
 									jump <= 0;
 								end
 						endcase
 					end
 				`OPci8:
 					begin
-						regfile [ir `Reg0] <= ((ir `Imm8 & 8'h80) ? 16'hff00 : 0) | (ir `Imm8 & 8'hff);
+						regfile [ir1 `Reg0] <= ((ir1 `Imm8 & 8'h80) ? 16'hff00 : 0) | (ir1 `Imm8 & 8'hff);
 						jump <= 0;
 					end
 				`OPcii:
 					begin
-						regfile [ir `Reg0] `HighBits <= ir `Imm8;
-						regfile [ir `Reg0] `LowBits <= ir `Imm8;
+						regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
+						regfile [ir1 `Reg0] `LowBits <= ir1 `Imm8;
 						jump <= 0;
 					end
 				`OPcup:
 					begin
-						regfile [ir `Reg0] `HighBits <= ir `Imm8;
+						regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
 						jump <= 0;
 					end
 				`OPbz:
 					begin
-						if (regfile [ir `Reg0] == 0) begin
-							target <= pc + ir `Imm8;
+						if (regfile [ir1 `Reg0] == 0) begin
+							target <= pc + ir1 `Imm8;
 							jump <= 1;
 						end
 					end
 				`OPbnz:
 					begin
-						if (regfile [ir `Reg0] != 0) begin
-							target <= pc + ir `Imm8;
+						if (regfile [ir1 `Reg0] != 0) begin
+							target <= pc + ir1 `Imm8;
 							jump <= 1;
 						end
 					end
 				default: //default cases are handled by ALU
 					begin
-						regfile [ir `Reg0] <= aluOut;
+						regfile [ir1 `Reg0] <= aluOut;
 						jump <= 0;
 					end
 			endcase	
 		end
 	end
-endmodule
 
 module testbench;
 reg reset = 0;
