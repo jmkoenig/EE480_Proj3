@@ -61,7 +61,7 @@
 `define OPshii		8'b01110101
 `define OPslti		8'b01110110
 `define OPsltii		8'b01110111
-`define NOP		16'b0101000000000000
+`define NOP		16'b0000000000000001
 // TODO: complete ALU
 module alu(rd, rs, op, aluOut);
 	input `WORD rd;
@@ -178,7 +178,7 @@ module processor(halt, reset, clk);
 	//checks if pc is set
 	function setspc;
 	input `WORD inst;
-	setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz));
+		setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz) && (inst `OP != `OPtrap));
 	endfunction
 	
 	//check if rd is used
@@ -220,7 +220,6 @@ module processor(halt, reset, clk);
 	
 	//start of stage 1
 	always @(posedge clk) begin
-		//check for conflict
 		if((ir0 != `NOP) && setsrd(ir1) && ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) 
 			&& (ir0 `Reg1 == ir1 `Reg0)))) begin
 			wait1 = 1;
