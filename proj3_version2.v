@@ -161,7 +161,7 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
-		s = `NOP
+		s = `NOP;
 		jump = 0;
 		
 		//The following functions read from VMEM?
