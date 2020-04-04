@@ -33,6 +33,7 @@
 // 8 bit op codes
 `define OPtrap		8'b00000000
 `define OPjr 		8'b00000001
+`define OPnop           8'b00000010
 `define OPld		8'b01000000
 `define OPst		8'b01000001
 `define OPnot		8'b00010000
@@ -161,7 +162,7 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
-		s = `NOP;
+		s = `NOP `Op0;
 		jump = 0;
 		
 		//The following functions read from VMEM?
