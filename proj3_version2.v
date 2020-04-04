@@ -163,7 +163,7 @@ module processor(halt, reset, clk);
 		halt = 0;
 		pc = 0;
 		//state is NOP
-		s = 'TrapOrJr;
+		s = `TrapOrJr;
 		jump = 0;
 		rd1 = 0;
 		rs1 = 0;
@@ -178,7 +178,8 @@ module processor(halt, reset, clk);
 	//checks if the destination register is set
 	function setsrd;
 	input `WORD inst;
-	setsrd = (inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz) && (inst `OP != `OPst) && (inst `OP != `OPtrap);
+	setsrd = (inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz) && (inst `OP != `OPst) && (inst `OP != `OPtrap) 
+		&& (inst `OP != `OPnop);
 	endfunction
 	
 	//checks if pc is set
@@ -190,7 +191,8 @@ module processor(halt, reset, clk);
 	//check if rd is used
 	function usesrd;
 	input `WORD inst;	
-	usesrd = (inst `OP != `OPld) && (inst `OP != `OPtrap) && (inst `OP != `OPci8) && (inst `OP != `OPcii) && (inst `OP != `OPcup);
+	usesrd = (inst `OP != `OPld) && (inst `OP != `OPtrap) && (inst `OP != `OPci8) && (inst `OP != `OPcii) && (inst `OP != `OPcup) 
+		&& (inst `OP != `OPnop);
 	endfunction
 	
 	//check if rd is used
