@@ -178,7 +178,7 @@ module processor(halt, reset, clk);
 	//checks if pc is set
 	function setspc;
 	input `WORD inst;
-		setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz) && (inst `OP != `OPtrap));
+		setspc = !((inst `OP != `OPjr) && (inst `Op0 != `OPbz) && (inst `Op0 != `OPbnz));
 	endfunction
 	
 	//check if rd is used
@@ -203,7 +203,7 @@ module processor(halt, reset, clk);
 	always @(posedge clk) begin
 		tpc = (jump ? target : pc);
 		if (wait1) begin
-    			// blocked by stage 1, so should not jump
+    			// blocked by stage 1, so don't increment
    			pc <= tpc;
   		end else begin
    			// not blocked by stage 1
@@ -220,8 +220,8 @@ module processor(halt, reset, clk);
 	
 	//start of stage 1
 	always @(posedge clk) begin
-		if((ir0 != `NOP) && setsrd(ir1) && ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) 
-			&& (ir0 `Reg1 == ir1 `Reg0)))) begin
+		if((ir0 != `NOP) && setsrd(ir1) && 
+		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
 			wait1 = 1;
 			ir1 <= `NOP;
 		//no conflict
