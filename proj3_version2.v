@@ -163,8 +163,12 @@ module processor(halt, reset, clk);
 		halt = 0;
 		pc = 0;
 		//state is NOP
-		s = 'OPnop;
+		s = 'TrapOrJr;
 		jump = 0;
+		rd1 = 0;
+		rs1 = 0;
+		ir0 = `NOP;
+		ir1 = `NOP;
 		
 		//The following functions read from VMEM?
 		$readmemh0(text);
