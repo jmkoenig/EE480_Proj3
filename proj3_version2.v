@@ -144,13 +144,12 @@ module processor(halt, reset, clk);
 	reg `WORD pc = 0;
 	reg `WORD ir;
 	reg `WORD regfile `REGSIZE;		// Register File Size
-	reg `WORD rd, rs;
 	wire `WORD aluOut;
 	reg `DEST target;	// jump target
 	//new variables
 	reg jump;
 	reg `WORD ir0, ir1;
-	reg `STATE rd1, rs1;
+	reg `WORD rd1, rs1;
 	reg `WORD imm, res;
 	reg `WORD tpc;
 	wire pendpc;		// is there a pc update
