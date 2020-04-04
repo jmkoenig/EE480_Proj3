@@ -30,13 +30,13 @@ trap		:=	0:8 0:4 0:4
 ;	(yes, these are harder than all the real instructions)
 
 ci $.d, .c16	?((.c16 >= -128) && (.c16 <= 127)) {
-		:=	ci8:4 .c16:8 at:4	; ci8 $at, .c16
+		:=	ci8:4 .c16:8 .d:4	; ci8 $d, .c16
 		}
 ci $.d, .c16	?((.c16 & 0xff) == ((.c16 >> 8) & 0xff)) {
-		:=	cii:4 .c16:8 at:4	; cii $at, .c16
+		:=	cii:4 .c16:8 .d:4	; cii $d, .c16
 		}
-ci $.d, .c16	:= {	cii:4 .c16:8 at:4	; cii $at, .c16
-			cup:4 (.c16>>8):8 at:4	; cup $at, (.c16>>8)
+ci $.d, .c16	:= {	cii:4 .c16:8 .d:4	; cii $d, .c16
+			cup:4 (.c16>>8):8 .d:4	; cup $d, (.c16>>8)
 		}
 
 jmp .addr	?(((.addr - .) >= -128) && ((.addr - .) <= 127)) {
