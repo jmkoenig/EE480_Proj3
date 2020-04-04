@@ -62,7 +62,7 @@
 `define OPshii		8'b01110101
 `define OPslti		8'b01110110
 `define OPsltii		8'b01110111
-`define NOP		16'b0000000000000001
+`define NOP		16'b0000001000000001
 // TODO: complete ALU
 module alu(rd, rs, op, aluOut);
 	input `WORD rd;
@@ -162,7 +162,8 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
-		s = `NOP `Op0;
+		//state is NOP
+		s = 'OPnop;
 		jump = 0;
 		
 		//The following functions read from VMEM?
@@ -253,6 +254,10 @@ module processor(halt, reset, clk);
 							begin
 								target <= regfile[ir1 `Reg0 ];
 								jump <= 1;
+							end
+						`OPnop:
+							begin
+								jump <= 0;
 							end
 					endcase
 				 end // halts the program and saves the current instruction
