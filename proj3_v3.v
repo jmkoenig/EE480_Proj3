@@ -130,12 +130,12 @@ module processor(halt, reset, clk);
 				ALUout `HighBits= rd `HighBits < rs `HighBits; 
 				ALUout `LowBits = rd `LowBits < rs `LowBits; 
 			end
-			`OPaddp: begin out = rd `WORD + rs `WORD; end
+			`OPaddp: begin ALUout = rd `WORD + rs `WORD; end
 			`OPaddpp: begin 
 				ALUout `HighBits = rd `HighBits + rs `HighBits; 
 				ALUout `LowBits = rd `LowBits + rs `LowBits;
 			end
-			`OPmulp: begin out = rd `WORD * rs `WORD; end
+			`OPmulp: begin ALUout = rd `WORD * rs `WORD; end
 			`OPmulpp: begin 
 				ALUout `HighBits = rd `HighBits * rs `HighBits; 
 				ALUout `LowBits = rd `LowBits * rs `LowBits; 
