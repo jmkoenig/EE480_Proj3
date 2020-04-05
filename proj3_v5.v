@@ -310,7 +310,7 @@ module processor(halt, reset, clk);
 	
 	//stage 3 starts here
 	always @ (posedge clk) begin
-		if(!jump && (ir2 != `NOP))
+		if(!jump && (ir2 != `NOP && setsrd(ir2)))
 			regfile [rd2] <= res;
 		pc3 <= target;
 	end
