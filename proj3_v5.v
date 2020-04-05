@@ -70,7 +70,6 @@ module processor(halt, reset, clk);
 	input reset, clk;
 	reg `STATE s;
 	reg `OPSIZE op;
-	wire h;
 
 	//processor component definitions
 	reg `WORD text `MEMSIZE;		// instruction memory
