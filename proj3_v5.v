@@ -231,6 +231,11 @@ module processor(halt, reset, clk);
 			op <= {ir0 `Op0, ir0 `Op1};
 			s  <= ir0 `Op0;
 		end
+		//check to ensure no incorrect follow through
+		if(jump3)
+			ir1 <= `NOP;
+		else
+			ir1 <= ir0;
 	end
 	
 	//stage 2 starts here
@@ -307,9 +312,12 @@ module processor(halt, reset, clk);
 					jump <= 0;
 				end
 		endcase	
-		ir2 <= ir1;
 		rd2 <= rd1;
 		rs2 <= rs1;
+		if(jump3)
+			ir2 <= `NOP;
+		else
+			ir2 <= ir1;
 	end
 	
 	//stage 3 starts here
