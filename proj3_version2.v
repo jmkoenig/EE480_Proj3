@@ -209,7 +209,7 @@ module processor(halt, reset, clk);
 	
 	//start of state 0
 	always @(posedge clk) begin
-		tpc = (jump ? target+pc : pc);
+		tpc = (jump ? target : pc);
 		if (wait1) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
