@@ -321,7 +321,7 @@ module processor(halt, reset, clk);
 			jump3 <= 0;
 		pc3 <= target;
 		if(ir2 `OP == `OPtrap) 
-			halt <= 1;
+			halt = 1;
 	end
 endmodule 
 
