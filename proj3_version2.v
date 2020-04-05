@@ -245,80 +245,76 @@ module processor(halt, reset, clk);
 	
 	//stage 2 starts here
 	always @(posedge clk) begin
-		if(ir1==`NOP)
-			jump <= 0;
-		else begin
-			//State machine case
-			case (s)
-				`TrapOrJr: begin
+		//State machine case
+		case (s)
+			`TrapOrJr: begin
+				case (op)
+					`OPtrap: 
+						begin
+							halt <= 1;
+						end
+					`OPjr:
+						begin
+							target <= regfile[ir1 `Reg0 ];
+							jump <= 1;
+						end
+					`OPnop:
+						begin
+							jump <= 0;
+						end
+				endcase
+			 end // halts the program and saves the current instruction
+			`LdOrSt:
+				begin
 					case (op)
-						`OPtrap: 
+						`OPld:
 							begin
-								halt <= 1;
+								regfile [ir1 `Reg0] <= data[regfile [ir1 `Reg1]];
+								jump <= 0;
 							end
-						`OPjr:
+						`OPst:
 							begin
-								target <= regfile[ir1 `Reg0 ];
-								jump <= 1;
-							end
-						`OPnop:
-							begin
+								data[regfile [ir1 `Reg1]] = regfile [ir1 `Reg0];
 								jump <= 0;
 							end
 					endcase
-				 end // halts the program and saves the current instruction
-				`LdOrSt:
-					begin
-						case (op)
-							`OPld:
-								begin
-									regfile [ir1 `Reg0] <= data[regfile [ir1 `Reg1]];
-									jump <= 0;
-								end
-							`OPst:
-								begin
-									data[regfile [ir1 `Reg1]] = regfile [ir1 `Reg0];
-									jump <= 0;
-								end
-						endcase
+				end
+			`OPci8:
+				begin
+					regfile [ir1 `Reg0] <= {{8{ir1[7]}} ,ir1 `Imm8};
+					jump <= 0;
+				end
+			`OPcii:
+				begin
+					regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
+					regfile [ir1 `Reg0] `LowBits <= ir1 `Imm8;
+					jump <= 0;
+				end
+			`OPcup:
+				begin
+					regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
+					jump <= 0;
+				end
+			`OPbz:
+				begin
+					if (regfile [ir1 `Reg0] == 0) begin
+						target <= pc + ir1 `Imm8;
+						jump <= 1;
 					end
-				`OPci8:
-					begin
-						regfile [ir1 `Reg0] <= {{8{ir1[7]}} ,ir1 `Imm8};
-						jump <= 0;
+				end
+			`OPbnz:
+				begin
+					if (regfile [ir1 `Reg0] != 0) begin
+						target <= pc + ir1 `Imm8;
+						jump <= 1;
 					end
-				`OPcii:
-					begin
-						regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
-						regfile [ir1 `Reg0] `LowBits <= ir1 `Imm8;
-						jump <= 0;
-					end
-				`OPcup:
-					begin
-						regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
-						jump <= 0;
-					end
-				`OPbz:
-					begin
-						if (regfile [ir1 `Reg0] == 0) begin
-							target <= pc + ir1 `Imm8;
-							jump <= 1;
-						end
-					end
-				`OPbnz:
-					begin
-						if (regfile [ir1 `Reg0] != 0) begin
-							target <= pc + ir1 `Imm8;
-							jump <= 1;
-						end
-					end
-				default: //default cases are handled by ALU
-					begin
-						regfile [ir1 `Reg0] <= aluOut;
-						jump <= 0;
-					end
-			endcase	
-		end
+				end
+			default: //default cases are handled by ALU
+				begin
+					regfile [ir1 `Reg0] <= aluOut;
+					jump <= 0;
+				end
+		endcase	
 	end
 endmodule 
 
