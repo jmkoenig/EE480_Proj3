@@ -293,8 +293,8 @@ module processor(halt, reset, clk);
 					if (regfile [ir1 `Reg0] == 0) begin
 							target <= pc + ir1 `Imm8;
 							jump <= 1;
-						end else
-							jump <= 0;	
+					end else
+						jump <= 0;	
 				end
 			`OPbnz:
 				begin
@@ -321,6 +321,8 @@ module processor(halt, reset, clk);
 			regfile [rd2] <= res;
 		if(jump)
 			jump3 <= 1;
+		else
+			jump3 <= 0;
 		pc3 <= target;
 		if(ir2 `OP == `OPtrap) 
 			halt <= 1;
