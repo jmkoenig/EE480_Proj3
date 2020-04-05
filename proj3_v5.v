@@ -240,7 +240,7 @@ module processor(halt, reset, clk);
 				case (op)
 					`OPtrap: 
 						begin
-							h <= 1;
+							jump <= 0;
 						end
 					`OPjr:
 						begin
@@ -314,7 +314,7 @@ module processor(halt, reset, clk);
 		if(!jump && (ir2 != `NOP && setsrd(ir2)))
 			regfile [rd2] <= res;
 		pc3 <= target;
-		halt <= h;
+		if(ir2 `OP == `OPtrap) halt <= 1;
 	end
 endmodule 
 
