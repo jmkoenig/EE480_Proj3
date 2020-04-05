@@ -199,7 +199,7 @@ module processor(halt, reset, clk);
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump3 ? pc3 : pc);
-		if (wait1 || wait2) begin
+		if (wait1) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
   		end else begin
@@ -234,10 +234,6 @@ module processor(halt, reset, clk);
 	
 	//stage 2 starts here
 	always @(posedge clk) begin
-		if(wait1)
-			wait2 <= 1;
-		else
-			wait2 <= 0;
 		//State machine case
 		case (s)
 			`TrapOrJr: begin
