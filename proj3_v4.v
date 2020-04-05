@@ -306,7 +306,13 @@ module processor(halt, reset, clk);
 	end
 	
 	// stage 3 -- register write
-	
+	always @(posedge clk) begin
+		ir2 <= ir1;
+		op <= {ir1 `Op0, ir1 `Op1};
+		s <= ir1 `Op0;
+		case (s)
+			
+	end
 endmodule 
 
 module testbench;
