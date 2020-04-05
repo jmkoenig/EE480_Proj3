@@ -106,7 +106,7 @@ module processor(halt, reset, clk);
 	end
 	
 	//These are the operations 
-	function ALUout;
+	function `WORD ALUout;
 		input `OPSIZE op;
 		input `WORD rd, rs;
 		case (op)
