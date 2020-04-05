@@ -85,7 +85,7 @@ module processor(halt, reset, clk);
 	reg `WORD imm, res;
 	reg `WORD tpc;
 	wire pendpc;			// is there a pc update
-	reg wait1 = 0, wait2 = 0;	// is a stall needed in stage 1 or 2
+	reg wait1 = 0;	// is a stall needed in stage 1 or 2
 
 	//processor initialization
 	always @(posedge reset) begin
@@ -201,7 +201,6 @@ module processor(halt, reset, clk);
 		tpc = (jump3 ? pc3 : pc);
 		if (wait1 && !jump3) begin
     			// blocked by stage 1, so don't increment
-			ir0 <= `NOP;
    			pc <= tpc;
   		end else begin
    			// not blocked by stage 1
@@ -318,15 +317,15 @@ module processor(halt, reset, clk);
 	
 	//stage 3 starts here
 	always @ (posedge clk) begin
-		if(!jump && (ir2 != `NOP && setsrd(ir2)))
+		if(ir2 `OP == `OPtrap) 
+			halt = 1;
+		if(!jump3 && !jump && (ir2 != `NOP && setsrd(ir2)))
 			regfile [rd2] <= res;
 		if(jump)
 			jump3 <= 1;
 		else
 			jump3 <= 0;
 		pc3 <= target;
-		if(ir2 `OP == `OPtrap) 
-			halt = 1;
 	end
 endmodule 
 
