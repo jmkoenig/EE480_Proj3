@@ -288,14 +288,16 @@ module processor(halt, reset, clk);
 					if (regfile [ir1 `Reg0] == 0) begin
 						target <= pc + ir1 `Imm8;
 						jump <= 1;
-					end
+					end else
+						jump <= 0;
 				end
 			`OPbnz:
 				begin
 					if (regfile [ir1 `Reg0] != 0) begin
 						target <= pc + ir1 `Imm8;
 						jump <= 1;
-					end
+					end else
+						jump <= 0;
 				end
 			default: //default cases are handled by ALU
 				begin
