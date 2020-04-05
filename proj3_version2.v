@@ -164,6 +164,7 @@ module processor(halt, reset, clk);
 		pc = 0;
 		//state is NOP
 		s = `TrapOrJr;
+		op = `OPtrap;
 		jump = 0;
 		rd1 = 0;
 		rs1 = 0;
