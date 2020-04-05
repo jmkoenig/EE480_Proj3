@@ -234,9 +234,9 @@ module processor(halt, reset, clk);
 	//stage 2 starts here
 	always @(posedge clk) begin
 		if(wait1)
-			wait2 = 1;
+			wait2 <= 1;
 		else
-			wait2 = 0;
+			wait2 <= 0;
 		//State machine case
 		case (s)
 			`TrapOrJr: begin
