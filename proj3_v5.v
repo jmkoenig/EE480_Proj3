@@ -194,13 +194,14 @@ module processor(halt, reset, clk);
 	endfunction
 	
 	//is pc changing
-	assign pendpc = (setspc(ir1)) || setspc(ir2);
+	assign pendpc = (setspc(ir0) || setspc(ir1)) || setspc(ir2);
 	
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump3 ? pc3 : pc);
 		if (wait1) begin
     			// blocked by stage 1, so don't increment
+			ir0 <= `NOP;
    			pc <= tpc;
   		end else begin
    			// not blocked by stage 1
