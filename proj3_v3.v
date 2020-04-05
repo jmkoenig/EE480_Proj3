@@ -304,6 +304,9 @@ module processor(halt, reset, clk);
 				end
 		endcase	
 	end
+	
+	// stage 3 -- register write
+	
 endmodule 
 
 module testbench;
