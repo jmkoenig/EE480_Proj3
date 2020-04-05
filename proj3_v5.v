@@ -81,7 +81,7 @@ module processor(halt, reset, clk);
 	//new variables
 	reg jump;
 	reg `WORD ir, ir0, ir1, ir2;
-	reg `WORD rd1, rs1;
+	reg `WORD rd1, rs1, rd2, rs2;
 	reg `WORD imm, res;
 	reg `WORD tpc;
 	wire pendpc;		// is there a pc update
@@ -193,7 +193,7 @@ module processor(halt, reset, clk);
 	endfunction
 	
 	//is pc changing
-	assign pendpc = (setspc(ir0) || setspc(ir1));
+	assign pendpc = (setspc(ir0) || setspc(ir1)) || setspc(ir2);
 	
 	//start of state 0
 	always @(posedge clk) begin
