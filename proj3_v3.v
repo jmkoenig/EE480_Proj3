@@ -106,14 +106,6 @@ module processor(halt, reset, clk);
 		$readmemh0(text);
 		$readmemh1(data);
 	end
-	input `WORD rd;
-	input wire `WORD rs;
-	input wire `OPSIZE op;
-	output wire `WORD aluOut;
-	
-	
-	reg `WORD out;
-	assign aluOut = out;
 	
 	//These are the operations 
 	function ALUout;
