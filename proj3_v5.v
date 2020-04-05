@@ -202,6 +202,7 @@ module processor(halt, reset, clk);
 		if (wait1) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
+			ir0 <= `NOP;
   		end else begin
    			// not blocked by stage 1
   			ir = text[tpc];
