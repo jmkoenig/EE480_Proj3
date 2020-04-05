@@ -199,20 +199,16 @@ module processor(halt, reset, clk);
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump3 ? pc3 : pc);
-		if (wait1) begin
+		if (wait1 && !jump3) begin
     			// blocked by stage 1, so don't increment
 			ir0 <= `NOP;
    			pc <= tpc;
   		end else begin
    			// not blocked by stage 1
+			//pendpc usage has been removed here, now assuming not taken
   			ir = text[tpc];
-			if(pendpc) begin
-				ir0 <= `NOP;
-     				pc <= tpc;
-			end else begin
-				ir0 <= ir;
-				pc <= tpc + 1;
-			end
+			ir0 <= ir;
+			pc <= tpc + 1;
 		end
 	end
 	
