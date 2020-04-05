@@ -63,74 +63,6 @@
 `define OPslti		8'b01110110
 `define OPsltii		8'b01110111
 `define NOP		16'b0000001000000001
-// TODO: complete ALU
-module alu(rd, rs, op, aluOut);
-	input `WORD rd;
-	input wire `WORD rs;
-	input wire `OPSIZE op;
-	output wire `WORD aluOut;
-	
-	
-	reg `WORD out;
-	assign aluOut = out;
-	
-	//These are the operations 
-	always @* begin 
-		case (op)
-			`OPaddi:  begin out = rd `WORD + rs `WORD; end
-			
-			`OPaddii: begin
-				out `HighBits = rd `HighBits + rs `HighBits; 
-				out `LowBits = rd `LowBits + rs `LowBits;
-			end
-			`OPmuli: begin out = rd `WORD * rs `WORD; end
-			`OPmulii: begin 
-				out `HighBits = rd `HighBits * rs `HighBits; 
-				out `LowBits = rd `LowBits * rs `LowBits; 
-			end
-			`OPshi: begin out = ((rs `WORD > 0) ? (rd `WORD << rs `WORD) : (rd[15:0] >> -rs[15:0])); end
-			`OPshii: begin 
-				out `HighBits = ((rs `HighBits >0)?(rd `HighBits <<rs `HighBits):(rd `HighBits >>-rs `HighBits ));
-				out `LowBits = ((rs `LowBits >0)?(rd `LowBits <<rs `LowBits):(rd `LowBits >>-rs `LowBits ));
-			end
-			`OPslti: begin out = rd `WORD < rs `WORD; end
-			`OPsltii: begin 
-				out `HighBits= rd `HighBits < rs `HighBits; 
-				out `LowBits = rd `LowBits < rs `LowBits; 
-			end
-			`OPaddp: begin out = rd `WORD + rs `WORD; end
-			`OPaddpp: begin 
-				out `HighBits = rd `HighBits + rs `HighBits; 
-				out `LowBits = rd `LowBits + rs `LowBits;
-			end
-			`OPmulp: begin out = rd `WORD * rs `WORD; end
-			`OPmulpp: begin 
-				out `HighBits = rd `HighBits * rs `HighBits; 
-				out `LowBits = rd `LowBits * rs `LowBits; 
-			end
-			`OPand: begin out = rd & rs; end
-			`OPor: begin out = rd | rs; end
-			`OPxor: begin out = rd ^ rs; end
-			`OPanyi: begin out = (rd ? -1: 0); end
-			`OPanyii: begin 
-				out `HighBits= (rd `HighBits ? -1 : 0); 
-				out `LowBits = (rd `LowBits ? -1 : 0); 
-			end
-			`OPnegi: begin out = -rd; end
-			`OPnegii: begin 
-				out `HighBits = -rd `HighBits; 
-				out `LowBits = -rd `LowBits; 
-			end
-			`OPi2p: begin out = rd; end
-			`OPii2pp: begin out = rd; end
-			`OPp2i: begin out = rd; end
-			`OPpp2ii: begin out = rd; end
-			`OPinvp: begin out = 0; end
-			`OPinvpp: begin out = 0; end
-			`OPnot: begin out = ~rd; end	
-		endcase	
-	end
-endmodule
 
 module processor(halt, reset, clk);
 	//control signal definitions
@@ -174,7 +106,73 @@ module processor(halt, reset, clk);
 		$readmemh0(text);
 		$readmemh1(data);
 	end
-
+	input `WORD rd;
+	input wire `WORD rs;
+	input wire `OPSIZE op;
+	output wire `WORD aluOut;
+	
+	
+	reg `WORD out;
+	assign aluOut = out;
+	
+	//These are the operations 
+	function ALUout;
+		input `OPsize op;
+		input `WORD rd, rs;
+		case (op)
+			`OPaddi:  begin ALUout = rd `WORD + rs `WORD; end		
+			`OPaddii: begin
+				ALUout `HighBits = rd `HighBits + rs `HighBits; 
+				ALUout `LowBits = rd `LowBits + rs `LowBits;
+			end
+			`OPmuli: begin ALUout = rd `WORD * rs `WORD; end
+			`OPmulii: begin 
+				ALUout `HighBits = rd `HighBits * rs `HighBits; 
+				ALUout `LowBits = rd `LowBits * rs `LowBits; 
+			end
+			`OPshi: begin ALUout = ((rs `WORD > 0) ? (rd `WORD << rs `WORD) : (rd[15:0] >> -rs[15:0])); end
+			`OPshii: begin 
+				ALUout `HighBits = ((rs `HighBits >0)?(rd `HighBits <<rs `HighBits):(rd `HighBits >>-rs `HighBits ));
+				ALUout `LowBits = ((rs `LowBits >0)?(rd `LowBits <<rs `LowBits):(rd `LowBits >>-rs `LowBits ));
+			end
+			`OPslti: begin ALUout = rd `WORD < rs `WORD; end
+			`OPsltii: begin 
+				ALUout `HighBits= rd `HighBits < rs `HighBits; 
+				ALUout `LowBits = rd `LowBits < rs `LowBits; 
+			end
+			`OPaddp: begin out = rd `WORD + rs `WORD; end
+			`OPaddpp: begin 
+				ALUout `HighBits = rd `HighBits + rs `HighBits; 
+				ALUout `LowBits = rd `LowBits + rs `LowBits;
+			end
+			`OPmulp: begin out = rd `WORD * rs `WORD; end
+			`OPmulpp: begin 
+				ALUout `HighBits = rd `HighBits * rs `HighBits; 
+				ALUout `LowBits = rd `LowBits * rs `LowBits; 
+			end
+			`OPand: begin ALUout = rd & rs; end
+			`OPor: begin ALUout = rd | rs; end
+			`OPxor: begin ALUout = rd ^ rs; end
+			`OPanyi: begin ALUout = (rd ? -1: 0); end
+			`OPanyii: begin 
+				ALUout `HighBits= (rd `HighBits ? -1 : 0); 
+				ALUout `LowBits = (rd `LowBits ? -1 : 0); 
+			end
+			`OPnegi: begin ALUout = -rd; end
+			`OPnegii: begin 
+				ALUout `HighBits = -rd `HighBits; 
+				ALUout `LowBits = -rd `LowBits; 
+			end
+			`OPi2p: begin ALUout = rd; end
+			`OPii2pp: begin ALUout = rd; end
+			`OPp2i: begin ALUout = rd; end
+			`OPpp2ii: begin ALUout = rd; end
+			`OPinvp: begin ALUout = 0; end
+			`OPinvpp: begin ALUout = 0; end
+			`OPnot: begin ALUout = ~rd; end	
+		endcase	
+	endfunction
+	
 	//checks if the destination register is set
 	function setsrd;
 	input `WORD inst;
@@ -311,7 +309,7 @@ module processor(halt, reset, clk);
 				end
 			default: //default cases are handled by ALU
 				begin
-					regfile [ir1 `Reg0] <= aluOut;
+					regfile [ir1 `Reg0] <= ALUout(op,rd1,rs1);
 					jump <= 0;
 				end
 		endcase	
