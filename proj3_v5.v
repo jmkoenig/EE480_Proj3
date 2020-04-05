@@ -70,6 +70,7 @@ module processor(halt, reset, clk);
 	input reset, clk;
 	reg `STATE s;
 	reg `OPSIZE op;
+	wire h;
 
 	//processor component definitions
 	reg `WORD text `MEMSIZE;		// instruction memory
@@ -239,7 +240,7 @@ module processor(halt, reset, clk);
 				case (op)
 					`OPtrap: 
 						begin
-							halt <= 1;
+							h <= 1;
 						end
 					`OPjr:
 						begin
@@ -313,6 +314,7 @@ module processor(halt, reset, clk);
 		if(!jump && (ir2 != `NOP && setsrd(ir2)))
 			regfile [rd2] <= res;
 		pc3 <= target;
+		halt <= h;
 	end
 endmodule 
 
