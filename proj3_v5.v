@@ -72,20 +72,20 @@ module processor(halt, reset, clk);
 	reg `OPSIZE op;
 
 	//processor component definitions
-	reg `WORD text `MEMSIZE;		// instruction memory
-	reg `WORD data `MEMSIZE;		// data memory
+	reg `WORD text `MEMSIZE;	// instruction memory
+	reg `WORD data `MEMSIZE;	// data memory
 	reg `WORD pc = 0, pc3;
-	reg `WORD regfile `REGSIZE;		// Register File Size
+	reg `WORD regfile `REGSIZE;	// Register File Size
 	wire `WORD aluOut;
-	reg `DEST target;	// jump target
+	reg `DEST target;		// jump target
 	//new variables
 	reg jump;
 	reg `WORD ir, ir0, ir1, ir2;
 	reg `WORD rd1, rs1, rd2, rs2;
 	reg `WORD imm, res;
 	reg `WORD tpc;
-	wire pendpc;		// is there a pc update
-	reg wait1;		// is a stall needed in stage 1
+	wire pendpc;			// is there a pc update
+	reg wait1 = 0, wait2 = 0;	// is a stall needed in stage 1 or 2
 
 	//processor initialization
 	always @(posedge reset) begin
@@ -198,7 +198,7 @@ module processor(halt, reset, clk);
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump ? pc3 : pc);
-		if (wait1) begin
+		if (wait1 || wait2) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
   		end else begin
@@ -233,6 +233,10 @@ module processor(halt, reset, clk);
 	
 	//stage 2 starts here
 	always @(posedge clk) begin
+		if(wait1)
+			wait2 = 1;
+		else
+			wait2 = 0;
 		//State machine case
 		case (s)
 			`TrapOrJr: begin
