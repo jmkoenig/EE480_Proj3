@@ -79,7 +79,7 @@ module processor(halt, reset, clk);
 	wire `WORD aluOut;
 	reg `DEST target;		// jump target
 	//new variables
-	reg jump;
+	reg jump, jump3;
 	reg `WORD ir, ir0, ir1, ir2;
 	reg `WORD rd1, rs1, rd2, rs2;
 	reg `WORD imm, res;
@@ -94,6 +94,7 @@ module processor(halt, reset, clk);
 		//state is NOP
 		s = `TrapOrJr;
 		jump = 0;
+		jump3 = 0;
 		rd1 = 0;
 		rs1 = 0;
 		ir0 = `NOP;
@@ -197,7 +198,7 @@ module processor(halt, reset, clk);
 	
 	//start of state 0
 	always @(posedge clk) begin
-		tpc = (jump ? pc3 : pc);
+		tpc = (jump3 ? pc3 : pc);
 		if (wait1 || wait2) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
@@ -290,10 +291,10 @@ module processor(halt, reset, clk);
 			`OPbz:
 				begin
 					if (regfile [ir1 `Reg0] == 0) begin
-						target <= pc + ir1 `Imm8;
-						jump <= 1;
-					end else
-						jump <= 0;
+							target <= pc + ir1 `Imm8;
+							jump <= 1;
+						end else
+							jump <= 0;	
 				end
 			`OPbnz:
 				begin
@@ -318,8 +319,11 @@ module processor(halt, reset, clk);
 	always @ (posedge clk) begin
 		if(!jump && (ir2 != `NOP && setsrd(ir2)))
 			regfile [rd2] <= res;
+		if(jump)
+			jump3 <= 1;
 		pc3 <= target;
-		if(ir2 `OP == `OPtrap) halt <= 1;
+		if(ir2 `OP == `OPtrap) 
+			halt <= 1;
 	end
 endmodule 
 
