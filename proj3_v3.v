@@ -87,8 +87,6 @@ module processor(halt, reset, clk);
 	reg `WORD tpc;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
-	
-	alu myalu(rd1, rs1, op, aluOut);
 
 	//processor initialization
 	always @(posedge reset) begin
@@ -109,7 +107,7 @@ module processor(halt, reset, clk);
 	
 	//These are the operations 
 	function ALUout;
-		input `OPsize op;
+		input `OPSIZE op;
 		input `WORD rd, rs;
 		case (op)
 			`OPaddi:  begin ALUout = rd `WORD + rs `WORD; end		
