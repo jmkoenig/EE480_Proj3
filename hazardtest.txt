@@ -1,12 +1,12 @@
-      .text
+        .text
 start:
-      cii $r1, 0x00
-      cii $r2, 0x01
-      addi $r1, $r2
-      bnz success
-      trap
-      trap
-sucess:
-      cii $r3 0xff
-      trap
-      trap
+        cii $r1, 0x00
+        cii $r2, 0x01
+        addi $r1, $r2
+        bnz $r1, success
+        trap
+        trap
+success:
+        cii $r3, 0xff
+        trap
+        trap
