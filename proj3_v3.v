@@ -109,58 +109,57 @@ module processor(halt, reset, clk);
 	
 	//These are the operations 
 	function `WORD ALUout;
-		input `WORD rd, rs;
 		case (op)
-			`OPaddi:  begin ALUout = rd `WORD + rs `WORD; end		
+			`OPaddi:  begin ALUout = rd1 `WORD + rs1 `WORD; end		
 			`OPaddii: begin
-				ALUout `HighBits = rd `HighBits + rs `HighBits; 
-				ALUout `LowBits = rd `LowBits + rs `LowBits;
+				ALUout `HighBits = rd1 `HighBits + rs1 `HighBits; 
+				ALUout `LowBits = rd1 `LowBits + rs1 `LowBits;
 			end
-			`OPmuli: begin ALUout = rd `WORD * rs `WORD; end
+			`OPmuli: begin ALUout = rd1 `WORD * rs1 `WORD; end
 			`OPmulii: begin 
-				ALUout `HighBits = rd `HighBits * rs `HighBits; 
-				ALUout `LowBits = rd `LowBits * rs `LowBits; 
+				ALUout `HighBits = rd1 `HighBits * rs1 `HighBits; 
+				ALUout `LowBits = rd1 `LowBits * rs1 `LowBits; 
 			end
-			`OPshi: begin ALUout = ((rs `WORD > 0) ? (rd `WORD << rs `WORD) : (rd[15:0] >> -rs[15:0])); end
+			`OPshi: begin ALUout = ((rs1 `WORD > 0) ? (rd1 `WORD << rs1 `WORD) : (rd1[15:0] >> -rs1[15:0])); end
 			`OPshii: begin 
-				ALUout `HighBits = ((rs `HighBits >0)?(rd `HighBits <<rs `HighBits):(rd `HighBits >>-rs `HighBits ));
-				ALUout `LowBits = ((rs `LowBits >0)?(rd `LowBits <<rs `LowBits):(rd `LowBits >>-rs `LowBits ));
+				ALUout `HighBits = ((rs1 `HighBits >0)?(rd1 `HighBits <<rs1 `HighBits):(rd1 `HighBits >>-rs1 `HighBits ));
+				ALUout `LowBits = ((rs1 `LowBits >0)?(rd1 `LowBits <<rs1 `LowBits):(rd1 `LowBits >>-rs1 `LowBits ));
 			end
-			`OPslti: begin ALUout = rd `WORD < rs `WORD; end
+			`OPslti: begin ALUout = rd1 `WORD < rs1 `WORD; end
 			`OPsltii: begin 
-				ALUout `HighBits= rd `HighBits < rs `HighBits; 
-				ALUout `LowBits = rd `LowBits < rs `LowBits; 
+				ALUout `HighBits= rd1 `HighBits < rs1 `HighBits; 
+				ALUout `LowBits = rd1 `LowBits < rs1 `LowBits; 
 			end
-			`OPaddp: begin ALUout = rd `WORD + rs `WORD; end
+			`OPaddp: begin ALUout = rd1 `WORD + rs1 `WORD; end
 			`OPaddpp: begin 
-				ALUout `HighBits = rd `HighBits + rs `HighBits; 
-				ALUout `LowBits = rd `LowBits + rs `LowBits;
+				ALUout `HighBits = rd1 `HighBits + rs1 `HighBits; 
+				ALUout `LowBits = rd1 `LowBits + rs1 `LowBits;
 			end
-			`OPmulp: begin ALUout = rd `WORD * rs `WORD; end
+			`OPmulp: begin ALUout = rd1 `WORD * rs1 `WORD; end
 			`OPmulpp: begin 
-				ALUout `HighBits = rd `HighBits * rs `HighBits; 
-				ALUout `LowBits = rd `LowBits * rs `LowBits; 
+				ALUout `HighBits = rd1 `HighBits * rs1 `HighBits; 
+				ALUout `LowBits = rd1 `LowBits * rs1 `LowBits; 
 			end
-			`OPand: begin ALUout = rd & rs; end
-			`OPor: begin ALUout = rd | rs; end
-			`OPxor: begin ALUout = rd ^ rs; end
-			`OPanyi: begin ALUout = (rd ? -1: 0); end
+			`OPand: begin ALUout = rd1 & rs1; end
+			`OPor: begin ALUout = rd1 | rs1; end
+			`OPxor: begin ALUout = rd1 ^ rs1; end
+			`OPanyi: begin ALUout = (rd1 ? -1: 0); end
 			`OPanyii: begin 
-				ALUout `HighBits= (rd `HighBits ? -1 : 0); 
-				ALUout `LowBits = (rd `LowBits ? -1 : 0); 
+				ALUout `HighBits= (rd1 `HighBits ? -1 : 0); 
+				ALUout `LowBits = (rd1 `LowBits ? -1 : 0); 
 			end
-			`OPnegi: begin ALUout = -rd; end
+			`OPnegi: begin ALUout = -rd1; end
 			`OPnegii: begin 
-				ALUout `HighBits = -rd `HighBits; 
-				ALUout `LowBits = -rd `LowBits; 
+				ALUout `HighBits = -rd1 `HighBits; 
+				ALUout `LowBits = -rd1 `LowBits; 
 			end
-			`OPi2p: begin ALUout = rd; end
-			`OPii2pp: begin ALUout = rd; end
-			`OPp2i: begin ALUout = rd; end
-			`OPpp2ii: begin ALUout = rd; end
+			`OPi2p: begin ALUout = rd1; end
+			`OPii2pp: begin ALUout = rd1; end
+			`OPp2i: begin ALUout = rd1; end
+			`OPpp2ii: begin ALUout = rd1; end
 			`OPinvp: begin ALUout = 0; end
 			`OPinvpp: begin ALUout = 0; end
-			`OPnot: begin ALUout = ~rd; end	
+			`OPnot: begin ALUout = ~rd1; end	
 		endcase	
 	endfunction
 	
@@ -303,7 +302,7 @@ module processor(halt, reset, clk);
 				end
 			default: //default cases are handled by ALU
 				begin
-					regfile [ir1 `Reg0] <= ALUout(rd1,rs1);
+					regfile [ir1 `Reg0] <= ALUout();
 					jump <= 0;
 				end
 		endcase	
