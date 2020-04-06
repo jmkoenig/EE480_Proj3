@@ -84,7 +84,7 @@ module processor(halt, reset, clk);
 	reg `WORD ir0, ir1;
 	reg `WORD rd1, rs1;
 	reg `WORD imm, res;
-	reg `WORD tpc;
+	reg `WORD tpc, pc1;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 
@@ -92,6 +92,7 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
+		pc1 =0;
 		//state is NOP
 		s = `TrapOrJr;
 		jump = 0;
@@ -200,7 +201,7 @@ module processor(halt, reset, clk);
 		tpc = (jump ? target : pc);
 		if (wait1) begin
     			// blocked by stage 1, so don't increment
-   			pc <= tpc;
+   			pc <= pc1;
   		end else begin
    			// not blocked by stage 1
   			ir = text[tpc];
@@ -220,6 +221,7 @@ module processor(halt, reset, clk);
 		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
 			wait1 <= 1;
 			ir1 <= `NOP;
+			pc1 <= pc;
 		//no conflict
 		end else begin
 			wait1 = 0;
