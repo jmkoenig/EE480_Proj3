@@ -92,7 +92,7 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
-		pc1 =0;
+		pc1 = 0;
 		//state is NOP
 		s = `TrapOrJr;
 		jump = 0;
@@ -221,7 +221,6 @@ module processor(halt, reset, clk);
 		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
 			wait1 <= 1;
 			ir1 <= `NOP;
-			pc1 <= pc;
 		//no conflict
 		end else begin
 			wait1 = 0;
@@ -231,6 +230,7 @@ module processor(halt, reset, clk);
 			op <= {ir0 `Op0, ir0 `Op1};
 			s  <= ir0 `Op0;
 		end
+		pc1 <= pc;
 	end
 	
 	//stage 2 starts here
@@ -288,14 +288,14 @@ module processor(halt, reset, clk);
 			`OPbz:
 				begin
 					if (rd1 == 0) begin
-						target <= pc + ir1 `Imm8;
+						target <= pc1 + ir1 `Imm8;
 						jump <= 1;
 					end
 				end
 			`OPbnz:
 				begin
 					if (rd1 != 0) begin
-						target <= pc + ir1 `Imm8;
+						target <= pc1 + ir1 `Imm8;
 						jump <= 1;
 					end
 				end
