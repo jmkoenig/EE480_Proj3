@@ -199,7 +199,7 @@ module processor(halt, reset, clk);
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump3 ? pc3 : pc);
-		if (wait1 && !jump3) begin
+		if (wait1) begin
     			// blocked by stage 1, so don't increment
    			pc <= tpc;
   		end else begin
@@ -213,6 +213,7 @@ module processor(halt, reset, clk);
 	
 	//start of stage 1
 	always @(posedge clk) begin
+		//check for conflict
 		if((ir0 != `NOP) && setsrd(ir1) && 
 		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
 			wait1 = 1;
@@ -223,14 +224,14 @@ module processor(halt, reset, clk);
 			rd1 <= regfile[ir0 `Reg0];
 			rs1 <= regfile[ir0 `Reg1];
 			ir1 <= ir0;
-			op <= {ir0 `Op0, ir0 `Op1};
+			op <= ir0 `OP;
 			s  <= ir0 `Op0;
+			if(jump3)
+				ir1 <= `NOP;
+			else
+				ir1 <= ir0;
 		end
 		//check to ensure no incorrect follow through
-		if(jump3)
-			ir1 <= `NOP;
-		else
-			ir1 <= ir0;
 	end
 	
 	//stage 2 starts here
