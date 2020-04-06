@@ -245,7 +245,7 @@ module processor(halt, reset, clk);
 						end
 					`OPjr:
 						begin
-							target <= regfile[rd1];
+							target <= rd1;
 							jump <= 1;
 						end
 					`OPnop:
@@ -259,49 +259,49 @@ module processor(halt, reset, clk);
 					case (op)
 						`OPld:
 							begin
-								regfile [rd1] <= data[regfile [rs1]];
+								regfile [ir1 `Reg0] <= data[rs1];
 								jump <= 0;
 							end
 						`OPst:
 							begin
-								data[regfile [rs1]] = regfile [rd1];
+								data[regfile [ir1 `Reg1]] = rd1;
 								jump <= 0;
 							end
 					endcase
 				end
 			`OPci8:
 				begin
-					regfile [rd1] <= {{8{ir1[7]}} ,ir1 `Imm8};
+					regfile [ir1 `Reg0] <= {{8{ir1[7]}} ,ir1 `Imm8};
 					jump <= 0;
 				end
 			`OPcii:
 				begin
-					regfile [rd1] `HighBits <= ir1 `Imm8;
-					regfile [rd1] `LowBits <= ir1 `Imm8;
+					regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
+					regfile [ir1 `Reg0] `LowBits <= ir1 `Imm8;
 					jump <= 0;
 				end
 			`OPcup:
 				begin
-					regfile [rd1] `HighBits <= ir1 `Imm8;
+					regfile [ir1 `Reg0] `HighBits <= ir1 `Imm8;
 					jump <= 0;
 				end
 			`OPbz:
 				begin
-					if (regfile [rd1] == 0) begin
+					if (rd1 == 0) begin
 						target <= pc + ir1 `Imm8;
 						jump <= 1;
 					end
 				end
 			`OPbnz:
 				begin
-					if (regfile [rd1] != 0) begin
+					if (rd1 != 0) begin
 						target <= pc + ir1 `Imm8;
 						jump <= 1;
 					end
 				end
 			default: //default cases are handled by ALU
 				begin
-					regfile [rd1] <= ALUout(op,rd1,rs1);
+					regfile [ir1 `Reg0] <= ALUout(op,rd1,rs1);
 					jump <= 0;
 				end
 		endcase	
