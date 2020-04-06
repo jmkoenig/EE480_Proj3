@@ -84,7 +84,7 @@ module processor(halt, reset, clk);
 	reg `WORD ir0, ir1;
 	reg `WORD rd1, rs1;
 	reg `WORD imm, res;
-	reg `WORD tpc, pc1;
+	reg `WORD tpc, pc1, pc0;
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 
@@ -92,6 +92,7 @@ module processor(halt, reset, clk);
 	always @(posedge reset) begin
 		halt = 0;
 		pc = 0;
+		pc0 = 0;
 		pc1 = 0;
 		//state is NOP
 		s = `TrapOrJr;
@@ -213,6 +214,7 @@ module processor(halt, reset, clk);
 				pc <= tpc + 1;
 			end
 		end
+		pc0 <= tpc;
 	end
 	
 	//start of stage 1
@@ -230,7 +232,7 @@ module processor(halt, reset, clk);
 			op <= {ir0 `Op0, ir0 `Op1};
 			s  <= ir0 `Op0;
 		end
-		pc1 <= pc;
+		pc1 <= pc0;
 	end
 	
 	//stage 2 starts here
