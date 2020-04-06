@@ -64,6 +64,74 @@
 `define OPsltii		8'b01110111
 `define NOP		16'b0000001000000001
 
+module alu(rd, rs, op, aluOut);
+	input `WORD rd;
+	input wire `WORD rs;
+	input wire `OPSIZE op;
+	output wire `WORD aluOut;
+	
+	
+	reg `WORD out;
+	assign aluOut = out;
+	
+	//These are the operations 
+	always @* begin 
+		case (op)
+			`OPaddi:  begin out = rd `WORD + rs `WORD; end
+			
+			`OPaddii: begin
+				out `HighBits = rd `HighBits + rs `HighBits; 
+				out `LowBits = rd `LowBits + rs `LowBits;
+			end
+			`OPmuli: begin out = rd `WORD * rs `WORD; end
+			`OPmulii: begin 
+				out `HighBits = rd `HighBits * rs `HighBits; 
+				out `LowBits = rd `LowBits * rs `LowBits; 
+			end
+			`OPshi: begin out = ((rs `WORD > 0) ? (rd `WORD << rs `WORD) : (rd[15:0] >> -rs[15:0])); end
+			`OPshii: begin 
+				out `HighBits = ((rs `HighBits >0)?(rd `HighBits <<rs `HighBits):(rd `HighBits >>-rs `HighBits ));
+				out `LowBits = ((rs `LowBits >0)?(rd `LowBits <<rs `LowBits):(rd `LowBits >>-rs `LowBits ));
+			end
+			`OPslti: begin out = rd `WORD < rs `WORD; end
+			`OPsltii: begin 
+				out `HighBits= rd `HighBits < rs `HighBits; 
+				out `LowBits = rd `LowBits < rs `LowBits; 
+			end
+			`OPaddp: begin out = rd `WORD + rs `WORD; end
+			`OPaddpp: begin 
+				out `HighBits = rd `HighBits + rs `HighBits; 
+				out `LowBits = rd `LowBits + rs `LowBits;
+			end
+			`OPmulp: begin out = rd `WORD * rs `WORD; end
+			`OPmulpp: begin 
+				out `HighBits = rd `HighBits * rs `HighBits; 
+				out `LowBits = rd `LowBits * rs `LowBits; 
+			end
+			`OPand: begin out = rd & rs; end
+			`OPor: begin out = rd | rs; end
+			`OPxor: begin out = rd ^ rs; end
+			`OPanyi: begin out = (rd ? -1: 0); end
+			`OPanyii: begin 
+				out `HighBits= (rd `HighBits ? -1 : 0); 
+				out `LowBits = (rd `LowBits ? -1 : 0); 
+			end
+			`OPnegi: begin out = -rd; end
+			`OPnegii: begin 
+				out `HighBits = -rd `HighBits; 
+				out `LowBits = -rd `LowBits; 
+			end
+			`OPi2p: begin out = rd; end
+			`OPii2pp: begin out = rd; end
+			`OPp2i: begin out = rd; end
+			`OPpp2ii: begin out = rd; end
+			`OPinvp: begin out = 0; end
+			`OPinvpp: begin out = 0; end
+			`OPnot: begin out = ~rd; end	
+		endcase	
+	end
+endmodule
+
 module processor(halt, reset, clk);
 	//control signal definitions
 	output reg halt;
@@ -88,6 +156,8 @@ module processor(halt, reset, clk);
 	wire pendpc;		// is there a pc update
 	reg wait1;		// is a stall needed in stage 1
 
+	alu myalu(rd1, rs1, op, aluOut);
+	
 	//processor initialization
 	always @(posedge reset) begin
 		halt = 0;
@@ -302,7 +372,7 @@ module processor(halt, reset, clk);
 				end
 			default: //default cases are handled by ALU
 				begin
-					regfile [ir1 `Reg0] <= ALUout();
+					regfile [ir1 `Reg0] <= aluOut;
 					jump <= 0;
 				end
 		endcase	
