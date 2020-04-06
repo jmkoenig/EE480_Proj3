@@ -109,7 +109,6 @@ module processor(halt, reset, clk);
 	
 	//These are the operations 
 	function `WORD ALUout;
-		input `OPSIZE op;
 		input `WORD rd, rs;
 		case (op)
 			`OPaddi:  begin ALUout = rd `WORD + rs `WORD; end		
@@ -304,14 +303,11 @@ module processor(halt, reset, clk);
 				end
 			default: //default cases are handled by ALU
 				begin
-					regfile [ir1 `Reg0] <= ALUout(op,rd1,rs1);
+					regfile [ir1 `Reg0] <= ALUout(rd1,rs1);
 					jump <= 0;
 				end
 		endcase	
 	end
-	
-	// stage 3 -- register write
-	
 endmodule 
 
 module testbench;
