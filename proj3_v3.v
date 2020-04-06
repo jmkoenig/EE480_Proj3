@@ -218,7 +218,7 @@ module processor(halt, reset, clk);
 	always @(posedge clk) begin
 		if((ir0 != `NOP) && setsrd(ir1) && 
 		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
-			wait1 = 1;
+			wait1 <= 1;
 			ir1 <= `NOP;
 		//no conflict
 		end else begin
