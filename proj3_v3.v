@@ -200,9 +200,10 @@ module processor(halt, reset, clk);
 	//start of state 0
 	always @(posedge clk) begin
 		tpc = (jump ? target : pc);
-		if (wait1) begin
+		if ((ir0 != `NOP) && setsrd(ir1) && 
+		   ((usesrd(ir0) && (ir0 `Reg0 == ir1 `Reg0)) || (usesrs(ir0) && (ir0 `Reg1 == ir1 `Reg0)))) begin
     			// blocked by stage 1, so don't increment
-   			pc <= pc0;
+   			pc <= tpc;
   		end else begin
    			// not blocked by stage 1
   			ir = text[tpc];
